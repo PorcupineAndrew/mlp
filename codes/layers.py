@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.special import expit
+from utils import LOG_INFO
 
 
 class Layer(object):
@@ -28,12 +30,33 @@ class Relu(Layer):
         super(Relu, self).__init__(name)
 
     def forward(self, input):
-        '''Your codes here'''
-        pass
+        '''linear rectifier activation, input as u, output as
+        f(u) = max(0, u). For best performance, use in-replace
+        max method.
+
+        Args
+        --------
+        input: numpy.array([dim for input layer])
+
+        Returns
+        --------
+        output: numpy.array([dim for current layer])
+        '''
+        self._saved_for_backward(input)
+        return np.maximum(input, 0, input)
 
     def backward(self, grad_output):
-        '''Your codes here'''
-        pass
+        '''linear rectifier gradient
+
+        Args
+        --------
+        grad_output: numpy.array([dim for current layer])
+
+        Returns
+        --------
+        output: numpy.array([dim for input layer])
+        '''
+        return (1 * (self._saved_tensor>0)) * grad_output
 
 
 class Sigmoid(Layer):
@@ -41,12 +64,35 @@ class Sigmoid(Layer):
         super(Sigmoid, self).__init__(name)
 
     def forward(self, input):
-        '''Your codes here'''
-        pass
+        '''sigmoid activation, input as u, output as
+        f(u) = 1/(1 + exp(-u)). For best performance,
+        use scipy.special.expit
+
+        Args
+        --------
+        input: numpy.array([dim for input layer])
+
+        Returns
+        --------
+        output: numpy.array([dim for current layer])
+        '''
+        output = expit(input)
+        self._saved_for_backward(output)
+        return output
 
     def backward(self, grad_output):
-        '''Your codes here'''
-        pass
+        '''sigmoid gradient
+
+        Args
+        --------
+        grad_output: numpy.array([dim for current layer])
+
+        Returns
+        --------
+        output: numpy.array([dim for input layer])
+        '''
+        sigmoid_value = self._saved_tensor
+        return (sigmoid_value * (1-sigmoid_value)) * grad_output
 
 
 class Linear(Layer):
@@ -64,12 +110,36 @@ class Linear(Layer):
         self.diff_b = np.zeros(out_num)
 
     def forward(self, input):
-        '''Your codes here'''
-        pass
+        '''treat each input as a row vector and produce an 
+        output vector by doing matrix multiplication with
+        weight W and then adding bias b.
+
+        Args
+        --------
+        input: numpy.array([dim for input layer])
+
+        Returns
+        --------
+        output: numpy.array([dim for current layer])
+        '''
+        self._saved_for_backward(input)
+        return np.dot(input, self.W) + self.b
 
     def backward(self, grad_output):
-        '''Your codes here'''
-        pass
+        '''linear gradient
+
+        Args
+        --------
+        grad_output: numpy.array([dim for current layer])
+
+        Returns
+        --------
+        output: numpy.array([dim for input layer])
+        '''
+        input = self._saved_tensor
+        self.grad_W = np.array([input for i in range(out_num)]).T
+        self.grad_b = np.ones(out_num)
+        return np.dot(grad_output, self.W.T)
 
     def update(self, config):
         mm = config['momentum']
