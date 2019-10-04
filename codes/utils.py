@@ -2,6 +2,8 @@ from __future__ import division
 from __future__ import print_function
 import numpy as np
 from datetime import datetime
+import shutil
+import os
 
 
 def onehot_encoding(label, max_num_class):
@@ -19,3 +21,10 @@ def LOG_INFO(msg):
     now = datetime.now()
     display_now = str(now).split(' ')[1][:-3]
     print(display_now + ' ' + msg)
+
+def createDir(path, removeflag=0):
+    if os.path.exists(path):
+        if removeflag == 1:
+            shutil.rmtree(path)
+            os.makedirs(path)
+    else: os.makedirs(path)

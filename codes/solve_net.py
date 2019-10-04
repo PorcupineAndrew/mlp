@@ -18,6 +18,8 @@ def train_net(model, loss, config, inputs, labels, batch_size, disp_freq):
     loss_list = []
     acc_list = []
 
+    loss_plot_list = []
+    acc_plot_list = []
     for input, label in data_iterator(inputs, labels, batch_size):
         target = onehot_encoding(label, 10)
         iter_counter += 1
@@ -29,7 +31,6 @@ def train_net(model, loss, config, inputs, labels, batch_size, disp_freq):
         # generate gradient w.r.t loss
         grad = loss.backward(output, target)
         # backward gradient
-
         model.backward(grad)
         # update layers' weights
         model.update(config)
@@ -38,11 +39,16 @@ def train_net(model, loss, config, inputs, labels, batch_size, disp_freq):
         loss_list.append(loss_value)
         acc_list.append(acc_value)
 
+        loss_plot_list.append(loss_value)
+        acc_plot_list.append(acc_value)
+
         if iter_counter % disp_freq == 0:
             msg = '  Training iter %d, batch loss %.4f, batch acc %.4f' % (iter_counter, np.mean(loss_list), np.mean(acc_list))
             loss_list = []
             acc_list = []
             LOG_INFO(msg)
+        
+    return loss_plot_list, acc_plot_list
 
 
 def test_net(model, loss, inputs, labels, batch_size):
