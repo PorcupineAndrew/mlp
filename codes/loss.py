@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import sys
 
 
 class EuclideanLoss(object):
@@ -19,7 +20,7 @@ class EuclideanLoss(object):
         --------
         loss: loss value
         '''
-        return np.sum((a-b)**2) / 2
+        return np.mean(np.sum((input-target)**2, axis=1)) / 2
 
     def backward(self, input, target):
         '''calculate Euclidean loss gradient
@@ -33,7 +34,8 @@ class EuclideanLoss(object):
         --------
         loss: loss gradient (numpy.array)
         '''
-        return input - target
+        delta = input-target
+        return delta / delta.shape[0]
 
 
 class SoftmaxCrossEntropyLoss(object):
@@ -53,7 +55,8 @@ class SoftmaxCrossEntropyLoss(object):
         loss: loss value
         '''
         input_exp = np.exp(input)
-        return -np.dot(np.log(input_exp/np.sum(input_exp)), target)
+        cross_entropy = np.log(input_exp/input_exp.sum(axis=1)[:,None])
+        return -np.mean((cross_entropy*target).sum(axis=1))
 
     def backward(self, input, target):
         '''calculate softmax loss gradient
@@ -68,5 +71,5 @@ class SoftmaxCrossEntropyLoss(object):
         loss: loss gradient (numpy.array)
         '''
         input_exp = np.exp(input)
-        softmax_value = input_exp / np.sum(input_exp)
-        return softmax_value*np.sum(target)-target
+        softmax_value = input_exp / input_exp.sum(axis=1)[:,None]
+        return softmax_value*target.sum(axis=1)[:,None]-target

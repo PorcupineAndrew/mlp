@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import expit
 from utils import LOG_INFO
+import sys
 
 
 class Layer(object):
@@ -137,8 +138,11 @@ class Linear(Layer):
         output: numpy.array([dim for input layer])
         '''
         input = self._saved_tensor
-        self.grad_W = np.array([input for i in range(out_num)]).T
-        self.grad_b = np.ones(out_num)
+        local_grad_W = np.array([input for i in range(self.out_num)]).T
+        accum_grad = np.array([grad_output for i in range(self.in_num)])
+
+        self.grad_W = np.mean(local_grad_W * accum_grad, axis=1)
+        self.grad_b = np.mean(grad_output, axis=0)
         return np.dot(grad_output, self.W.T)
 
     def update(self, config):
