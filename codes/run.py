@@ -2,7 +2,7 @@
 #-*- coding:utf-8 -*-
 # **********************************************************************
 # * Description   : training for one model
-# * Last change   : 11:49:18 2019-10-04
+# * Last change   : 09:30:17 2019-10-05
 # * Author        : Yihao Chen
 # * Email         : chenyiha17@mails.tsinghua.edu.cn
 # * License       : none
@@ -109,22 +109,22 @@ if __name__ == "__main__":
 
 
     # plot loss
-    x = list([i+1 for i in range(len(loss_line))])
+    x = list([i+1 for i in range(len(loss_line[0][1]))])
     plt.figure(figsize=(8,4))
     plt.xlabel("iter")
     plt.ylabel("loss")
-    plt.legend(loc="best")
     for item in loss_line:
         plt.plot(x, item[1], linewidth=1, label="epoch "+str(item[0]))
     plt.title(args.name+" loss", fontweight=800)
+    plt.legend(loc="best")
     plt.savefig(os.path.join(plot_dir, args.name+"_loss.png"))
 
     # plot acc
     plt.figure(figsize=(8,4))
     plt.xlabel("iter")
     plt.ylabel("acc")
-    plt.legend(loc="best")
     for item in acc_line:
         plt.plot(x, item[1], linewidth=1, label="epoch "+str(item[0]))
     plt.title(args.name+" accuracy", fontweight=800)
+    plt.legend(loc="best")
     plt.savefig(os.path.join(plot_dir, args.name+"_acc.png"))

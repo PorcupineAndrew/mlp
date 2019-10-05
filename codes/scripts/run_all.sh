@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # **********************************************************************
 # * Description   : run all experiments
-# * Last change   : 13:57:23 2019-10-04
+# * Last change   : 11:07:51 2019-10-06
 # * Author        : Yihao Chen
 # * Email         : chenyiha17@mails.tsinghua.edu.cn
 # * License       : none
@@ -141,6 +141,20 @@ exp_10()
         > $LOG_PATH
 }
 
+# two hidden layer, relu motivation, softmaxx loss
+good_model()
+{
+    echo -e "\t*good_model"
+    EXP_DIR=${RESULT_DIR}/good_model
+    LOG_PATH=${EXP_DIR}/runtime.log
+    [ ! -d "$EXP_DIR" ] && mkdir $EXP_DIR
+
+    ./run.py -name good_model -arch "Lin-784-20 Relu Lin-20-10 Relu" \
+        -config "learning_rate:0.1 weight_decay:0.0001 momentum:0.1" -loss Softmax \
+        > $LOG_PATH
+}
+
+
 exp_1
 exp_2
 exp_3
@@ -151,3 +165,4 @@ exp_7
 exp_8
 exp_9
 exp_10
+good_model
